@@ -1,4 +1,6 @@
 # 待機列管理システム
+<img width="576" height="546" alt="image" src="https://github.com/user-attachments/assets/c8b0e769-c3c6-4089-adc3-7ea44a44c1aa" />
+
 誕生日会場での2S列などの待機列を管理するシステムです．
 
 基本的な機能としては以下
