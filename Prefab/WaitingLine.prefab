@@ -64,7 +64,7 @@ MonoBehaviour:
   iMaxLine: 40
   m_WaitingLineWindows:
   - {fileID: 7253603954413129253}
-  m_NoticeToast: {fileID: 3479561644595385101}
+  m_WaitingLineToast: {fileID: 3479561644595385101}
   slWaitingPlayerNames:
   - 
   - 

@@ -20,37 +20,47 @@ namespace Syebun.WaitingLine
     }
 
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
-    public class NoticeToast : UdonSharpBehaviour
+    public class WaitingLineToast : UdonSharpBehaviour
     {
 #region 変数
         // [ 設定用 ]
         [Header("参加時のメッセージ機能を有効にするか")]
-        public bool enableOnStart = false;
+        [SerializeField]
+        private bool enableOnStart = false;
         [Header("参加時のメッセージ内容")]
-        public string startMessage = "待機列は管理システムで管理しています";
+        [SerializeField, Multiline(2)]
+        private string startMessage = "待機列は管理システムで\n管理しています";
 
         [Header("Animation Settings")]
         [Tooltip("1フレームの秒数")]
-        public float display1F = 0.05f;
+        [SerializeField]
+        private float display1F = 0.05f;
 
         [Tooltip("フェードインの総時間（秒）")]
-        public float fadeInDuration = 0.5f;
+        [SerializeField]
+        private float fadeInDuration = 0.5f;
 
         [Tooltip("フェードアウトの総時間（秒）")]
-        public float fadeOutDuration = 0.5f;
+        [SerializeField]
+        private float fadeOutDuration = 0.5f;
 
         [Tooltip("トースト表示後の保持時間（秒）")]
-        public float displayDuration = 10f;
+        [SerializeField]
+        private float displayDuration = 10f;
 
         [Header("UI系")]
         [Tooltip("トースト内のメッセージテキスト")]
-        public TextMeshProUGUI messageText;
+        [SerializeField]
+        private TextMeshProUGUI messageText;
         [Tooltip("トーストの透明度を制御するCanvasGroup")]
-        public CanvasGroup canvasGroup;
+        [SerializeField]
+        private CanvasGroup canvasGroup;
         [Tooltip("トーストの進捗バーとして使用するImage")]
-        public Image progressBar;
+        [SerializeField]
+        private Image progressBar;
         [Tooltip("トーストを表示する際に鳴らすAudioSource")]
-        public AudioSource audioSource;
+        [SerializeField]
+        private AudioSource audioSource;
 
         // [ ローカル ]
         private NoticeState currentState = NoticeState.STATE_IDLE;

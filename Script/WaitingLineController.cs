@@ -38,7 +38,7 @@ namespace Syebun.WaitingLine
         private string[] slAdminList;
 
         [Header("順番が来た際の表示文字列")]
-        [SerializeField]
+        [SerializeField, Multiline(2)]
         private string sNoticeMessage = "順番が来ました\n指定の場所へお越しください";
 
         [Header("待機列が無い場合の表示文字列")]
@@ -56,7 +56,7 @@ namespace Syebun.WaitingLine
 
         [SerializeField]
         [Tooltip("Toast")]
-        private NoticeToast m_NoticeToast = null;
+        private WaitingLineToast m_WaitingLineToast = null;
 
         // [ 同期 ]
         [UdonSynced]
@@ -78,7 +78,10 @@ namespace Syebun.WaitingLine
 
         // [ ローカル ]
         private VRCPlayerApi lPlayer  = null; // ローカルユーザ情報
+        private WaitMode WLStatus = WaitMode.Wait; // 待機列参加ボタン状態(Join or Leave)
         private int iWaitingNo = -1; // 待機番号
+        private float fProcessTimeoutSeconds = 5f; // 待機列参加・退出処理のタイムアウト時間（0以下で無効）
+        private float fProcessTime = 0f; // 処理開始時間（-1以下は処理未実行）
 #endregion
 
 #region ライルサイクル
@@ -114,6 +117,16 @@ namespace Syebun.WaitingLine
                 SyncWaitingPlayerNames();
             }
         }
+
+        void Update()
+        {
+            // ペンディングのタイムアウト解除
+            if (0f < fProcessTimeoutSeconds && (Time.time - fProcessTime) > fProcessTimeoutSeconds)
+            {
+                fProcessTime = 0f;
+                ChangeJoinLeaveButton((int)WLStatus);
+            }
+        }
 #endregion
 
 #region イベント
@@ -130,9 +143,9 @@ namespace Syebun.WaitingLine
             if(sLPName == sCallPlayerName)
             {
                 ChangeJoinLeaveButton((int)WaitMode.Join);
-                if(null != m_NoticeToast)
+                if(null != m_WaitingLineToast)
                 {
-                    m_NoticeToast.ShowToast(sNoticeMessage);
+                    m_WaitingLineToast.ShowToast(sNoticeMessage);
                 }
             }
         }
@@ -149,6 +162,8 @@ namespace Syebun.WaitingLine
 
             ChangeJoinLeaveButton((int)WaitMode.Wait);
             SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(LineJoin), sLPName);
+
+            fProcessTime = Time.time;
         }
 
         /// <summary>
@@ -162,6 +177,8 @@ namespace Syebun.WaitingLine
 
             ChangeJoinLeaveButton((int)WaitMode.Wait);
             SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(LineLeave), sLPName);
+
+            fProcessTime = Time.time;
         }
 
         /// <summary>
@@ -260,6 +277,7 @@ namespace Syebun.WaitingLine
             // 列参加者の場合は状態を更新
             if(sLPName == sName)
             {
+                WLStatus = (WaitMode)waitMode;
                 ChangeJoinLeaveButton(waitMode);
             }
         }
@@ -448,11 +466,13 @@ namespace Syebun.WaitingLine
             if(0 > index)
             {
                 // 待機列未参加
+                WLStatus = WaitMode.Join;
                 ChangeJoinLeaveButton((int)WaitMode.Join);
             }
             else
             {
                 // 待機列参加済み
+                WLStatus = WaitMode.Leave;
                 ChangeJoinLeaveButton((int)WaitMode.Leave);
             }
         }
